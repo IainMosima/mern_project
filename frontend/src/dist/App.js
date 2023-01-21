@@ -41,8 +41,10 @@ var react_bootstrap_1 = require("react-bootstrap");
 var Note_1 = require("./components/Note");
 var NotePage_module_css_1 = require("./styles/NotePage.module.css");
 var NotesApi = require("./network/note_api");
+var AddNoteDialog_1 = require("./components/AddNoteDialog");
 function App() {
     var _a = react_1.useState([]), notes = _a[0], setNotes = _a[1];
+    var _b = react_1.useState(false), showAddNoteDialog = _b[0], setShowAddNoteDialog = _b[1];
     react_1.useEffect(function () {
         function loadNotes() {
             return __awaiter(this, void 0, void 0, function () {
@@ -69,7 +71,10 @@ function App() {
         loadNotes();
     }, []);
     return (react_1["default"].createElement(react_bootstrap_1.Container, null,
+        react_1["default"].createElement(react_bootstrap_1.Button, { onClick: function () { return setShowAddNoteDialog(true); } }, "Add new Note"),
         react_1["default"].createElement(react_bootstrap_1.Row, { xs: 1, md: 2, xl: 3, className: "g-4" }, notes.map(function (note) { return (react_1["default"].createElement(react_bootstrap_1.Col, { key: note._id },
-            react_1["default"].createElement(Note_1["default"], { note: note, className: NotePage_module_css_1["default"].note }))); }))));
+            react_1["default"].createElement(Note_1["default"], { note: note, className: NotePage_module_css_1["default"].note }))); })),
+        showAddNoteDialog &&
+            react_1["default"].createElement(AddNoteDialog_1["default"], { onDismiss: function () { return setShowAddNoteDialog(false); } })));
 }
 exports["default"] = App;
