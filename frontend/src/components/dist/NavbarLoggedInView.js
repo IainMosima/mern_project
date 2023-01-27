@@ -1,15 +1,4 @@
 "use strict";
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -48,47 +37,35 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 var react_bootstrap_1 = require("react-bootstrap");
-var react_hook_form_1 = require("react-hook-form");
-var NoteApi = require("../network/note_api");
-var AddNoteDialog = function (_a) {
-    var _b;
-    var onDismiss = _a.onDismiss, onNoteSaved = _a.onNoteSaved;
-    var _c = react_hook_form_1.useForm(), register = _c.register, handleSubmit = _c.handleSubmit, _d = _c.formState, errors = _d.errors, isSubmitting = _d.isSubmitting;
-    function onSubmit(input) {
+var NotesApi = require("../network/note_api");
+var NavbarLoggedInView = function (_a) {
+    var user = _a.user, onLogoutSuccessful = _a.onLogoutSuccessful;
+    function logout() {
         return __awaiter(this, void 0, void 0, function () {
-            var noteResponse, error_1;
+            var error_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, NoteApi.createNote(input)];
+                        return [4 /*yield*/, NotesApi.logout()];
                     case 1:
-                        noteResponse = _a.sent();
-                        onNoteSaved(noteResponse);
+                        _a.sent();
+                        onLogoutSuccessful();
                         return [3 /*break*/, 3];
                     case 2:
                         error_1 = _a.sent();
-                        console.error(error_1);
                         alert(error_1);
+                        console.error(error_1);
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/];
                 }
             });
         });
     }
-    return (React.createElement(react_bootstrap_1.Modal, { show: true, onHide: function () { return onDismiss; } },
-        React.createElement(react_bootstrap_1.Modal.Header, { closeButton: true },
-            React.createElement(react_bootstrap_1.Modal.Title, null, "Add Note Note")),
-        React.createElement(react_bootstrap_1.Modal.Body, null,
-            React.createElement(react_bootstrap_1.Form, { id: "addNoteForm", onSubmit: handleSubmit(onSubmit) },
-                React.createElement(react_bootstrap_1.Form.Group, { className: "mb-3" },
-                    React.createElement(react_bootstrap_1.Form.Label, null, "Title"),
-                    React.createElement(react_bootstrap_1.Form.Control, __assign({ type: "text", placeholder: "Title", isInvalid: !!errors.title }, register("title", { required: "Required" }))),
-                    React.createElement(react_bootstrap_1.Form.Control.Feedback, { type: "invalid" }, (_b = errors.title) === null || _b === void 0 ? void 0 : _b.message)),
-                React.createElement(react_bootstrap_1.Form.Group, { className: "mb-3" },
-                    React.createElement(react_bootstrap_1.Form.Label, null, "Text"),
-                    React.createElement(react_bootstrap_1.Form.Control, __assign({ as: "textarea", placeholder: "Title" }, register("text")))))),
-        React.createElement(react_bootstrap_1.Modal.Footer, null,
-            React.createElement(react_bootstrap_1.Button, { type: "submit", form: "addNoteForm", disabled: isSubmitting }, "Save"))));
+    return (React.createElement(React.Fragment, null,
+        React.createElement(react_bootstrap_1.Navbar.Text, null,
+            "Signed in as: ",
+            user.username),
+        React.createElement(react_bootstrap_1.Button, { onClick: logout }, "Log out")));
 };
-exports["default"] = AddNoteDialog;
+exports["default"] = NavbarLoggedInView;

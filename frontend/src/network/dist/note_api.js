@@ -36,7 +36,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.createNote = exports.fetchNotes = void 0;
+exports.deleteNote = exports.updateNote = exports.createNote = exports.fetchNotes = exports.logout = exports.login = exports.signUp = exports.getLoggedInUser = void 0;
+var http_errors_1 = require("../errors/http_errors");
+var http_errors_2 = require("../errors/http_errors");
 function fetchData(input, init) {
     return __awaiter(this, void 0, void 0, function () {
         var response, errorBody, errorMessage;
@@ -51,11 +53,88 @@ function fetchData(input, init) {
                 case 3:
                     errorBody = _a.sent();
                     errorMessage = errorBody.error;
-                    throw Error(errorMessage);
+                    if (response.status === 401) {
+                        throw new http_errors_2.UnauthorizedError(errorMessage);
+                    }
+                    else if (response.status === 409) {
+                        throw new http_errors_1.ConflictError(errorMessage);
+                    }
+                    else {
+                        throw Error("Request failed with status: " + response.status + " message " + errorMessage);
+                    }
+                    _a.label = 4;
+                case 4: return [2 /*return*/];
             }
         });
     });
 }
+function getLoggedInUser() {
+    return __awaiter(this, void 0, Promise, function () {
+        var response;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, fetchData("/api/users", { method: "GET" })];
+                case 1:
+                    response = _a.sent();
+                    return [2 /*return*/, response.json()];
+            }
+        });
+    });
+}
+exports.getLoggedInUser = getLoggedInUser;
+function signUp(signUpCredentials) {
+    return __awaiter(this, void 0, Promise, function () {
+        var response;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, fetchData("/api/users/signup", {
+                        method: "POST",
+                        headers: {
+                            "content-type": "application/json"
+                        },
+                        body: JSON.stringify(signUpCredentials)
+                    })];
+                case 1:
+                    response = _a.sent();
+                    return [2 /*return*/, response.json()];
+            }
+        });
+    });
+}
+exports.signUp = signUp;
+function login(credentials) {
+    return __awaiter(this, void 0, Promise, function () {
+        var response;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, fetchData("/api/users/login", {
+                        method: "POST",
+                        headers: {
+                            "content-type": "application/json"
+                        },
+                        body: JSON.stringify(credentials)
+                    })];
+                case 1:
+                    response = _a.sent();
+                    return [2 /*return*/, response.json()];
+            }
+        });
+    });
+}
+exports.login = login;
+function logout() {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, fetchData("api/users/logout", { method: "POST" })];
+                case 1:
+                    _a.sent();
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+exports.logout = logout;
 function fetchNotes() {
     return __awaiter(this, void 0, Promise, function () {
         var response;
@@ -90,3 +169,36 @@ function createNote(note) {
     });
 }
 exports.createNote = createNote;
+function updateNote(noteId, note) {
+    return __awaiter(this, void 0, Promise, function () {
+        var response;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, fetchData("/api/notes/" + noteId, {
+                        method: "PATCH",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(note)
+                    })];
+                case 1:
+                    response = _a.sent();
+                    return [2 /*return*/, response.json()];
+            }
+        });
+    });
+}
+exports.updateNote = updateNote;
+function deleteNote(noteId) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, fetchData("/api/notes/" + noteId, { method: "DELETE" })];
+                case 1:
+                    _a.sent();
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+exports.deleteNote = deleteNote;

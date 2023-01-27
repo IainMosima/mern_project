@@ -1,46 +1,86 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Container, Row, Col } from 'react-bootstrap';
-import { Note as NoteModel } from './models/note'
-import Note from './components/Note';
-import styles from "./styles/NotePage.module.css";
-import * as NotesApi from "./network/note_api"
-import AddNoteDialog from './components/AddNoteDialog';
+import { useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import LoginModal from './components/LoginModal';
+import Navbar from './components/NavBar';
+import SignUpModal from './components/SignUpModal';
+import { User } from "./models/user";
+import * as NotesApi from "./network/note_api";
+import { Container } from 'react-bootstrap';
+import NotePage from './pages/NotesPages';
+import PrivacyPage from './pages/PrivacyPage';
+import NotFoundPage from './pages/NotFoundPage';
+import styles from './styles/App.module.css';
 
 function App(): JSX.Element {
-  const [notes, setNotes] = useState<NoteModel[]>([]);
-  const [showAddNoteDialog, setShowAddNoteDialog] = useState(false);
-  
+
+  const [loggedInUser, setloggedInUser] = useState<User | null>(null);
+  const [showLogInModal, setshowLogInModal] = useState(false);
+  const [showSignUpModal, setshowSignUpModal] = useState(false);
+
   useEffect(() => {
-    async function loadNotes() {
-      try{
-        const notes = await NotesApi.fetchNotes();
-        setNotes(notes);
+    async function fetchLoggedInUser() {
+      try {
+        const user = await NotesApi.getLoggedInUser();
+        setloggedInUser(user);
       } catch (error) {
         console.error(error);
-        alert(error);
       }
     }
-    loadNotes();
-  }, []);
+    fetchLoggedInUser();
+  }, [])
   
 
   return (
-    <Container>
-      <Button onClick={()=> setShowAddNoteDialog(true)}>
-        Add new Note
-      </Button>
-      <Row xs={1} md={2} xl={3} className="g-4">
-        {notes.map((note) => (
-          <Col key={note._id}>
-            <Note note={note} className={styles.note}/>
-          </Col>
-        ))}
-      </Row>
-      {
-        showAddNoteDialog &&
-        <AddNoteDialog onDismiss={()=>setShowAddNoteDialog(false)}/>
+    <BrowserRouter>
+      <div>
+        <Navbar
+        loggedInUser={loggedInUser}
+        onSignUpClicked={() => setshowSignUpModal(true)}
+        onLoginClicked={() => setshowLogInModal(true)}
+        onLogoutSuccessful={() => setloggedInUser(null)}
+        />
+
+        <Container className={styles.pageContainer}>
+          <Routes>
+
+            <Route
+              path='/'
+              element={<NotePage loggedInUser={loggedInUser}/>}
+            />
+
+            <Route
+              path='/privacy'
+              element={<PrivacyPage/>}
+            />
+            <Route 
+             path='/*'
+             element={<NotFoundPage />}
+            />
+
+          </Routes>
+        </Container>
+
+        {showSignUpModal &&
+          <SignUpModal
+          onDismiss={() => setshowSignUpModal(false)}
+          onSignUpSuccessfull={(user) => {
+            setloggedInUser(user);
+            setshowSignUpModal(false)
+          }}
+          />
       }
-    </Container>
+
+      {showLogInModal &&
+        <LoginModal
+        onDismiss={() => setshowLogInModal(false)}
+        onLoginSuccessful={(user) => { 
+          setloggedInUser(user);
+          setshowLogInModal(false);
+        }}
+        />
+      }
+      </div>
+    </BrowserRouter>
   );
 }
 

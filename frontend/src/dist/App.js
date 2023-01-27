@@ -37,44 +37,61 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 var react_1 = require("react");
-var react_bootstrap_1 = require("react-bootstrap");
-var Note_1 = require("./components/Note");
-var NotePage_module_css_1 = require("./styles/NotePage.module.css");
+var react_router_dom_1 = require("react-router-dom");
+var LoginModal_1 = require("./components/LoginModal");
+var NavBar_1 = require("./components/NavBar");
+var SignUpModal_1 = require("./components/SignUpModal");
 var NotesApi = require("./network/note_api");
-var AddNoteDialog_1 = require("./components/AddNoteDialog");
+var react_bootstrap_1 = require("react-bootstrap");
+var NotesPages_1 = require("./pages/NotesPages");
+var PrivacyPage_1 = require("./pages/PrivacyPage");
+var NotFoundPage_1 = require("./pages/NotFoundPage");
+var App_module_css_1 = require("./styles/App.module.css");
 function App() {
-    var _a = react_1.useState([]), notes = _a[0], setNotes = _a[1];
-    var _b = react_1.useState(false), showAddNoteDialog = _b[0], setShowAddNoteDialog = _b[1];
+    var _a = react_1.useState(null), loggedInUser = _a[0], setloggedInUser = _a[1];
+    var _b = react_1.useState(false), showLogInModal = _b[0], setshowLogInModal = _b[1];
+    var _c = react_1.useState(false), showSignUpModal = _c[0], setshowSignUpModal = _c[1];
     react_1.useEffect(function () {
-        function loadNotes() {
+        function fetchLoggedInUser() {
             return __awaiter(this, void 0, void 0, function () {
-                var notes_1, error_1;
+                var user, error_1;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
                             _a.trys.push([0, 2, , 3]);
-                            return [4 /*yield*/, NotesApi.fetchNotes()];
+                            return [4 /*yield*/, NotesApi.getLoggedInUser()];
                         case 1:
-                            notes_1 = _a.sent();
-                            setNotes(notes_1);
+                            user = _a.sent();
+                            setloggedInUser(user);
                             return [3 /*break*/, 3];
                         case 2:
                             error_1 = _a.sent();
                             console.error(error_1);
-                            alert(error_1);
                             return [3 /*break*/, 3];
                         case 3: return [2 /*return*/];
                     }
                 });
             });
         }
-        loadNotes();
+        fetchLoggedInUser();
     }, []);
-    return (react_1["default"].createElement(react_bootstrap_1.Container, null,
-        react_1["default"].createElement(react_bootstrap_1.Button, { onClick: function () { return setShowAddNoteDialog(true); } }, "Add new Note"),
-        react_1["default"].createElement(react_bootstrap_1.Row, { xs: 1, md: 2, xl: 3, className: "g-4" }, notes.map(function (note) { return (react_1["default"].createElement(react_bootstrap_1.Col, { key: note._id },
-            react_1["default"].createElement(Note_1["default"], { note: note, className: NotePage_module_css_1["default"].note }))); })),
-        showAddNoteDialog &&
-            react_1["default"].createElement(AddNoteDialog_1["default"], { onDismiss: function () { return setShowAddNoteDialog(false); } })));
+    return (React.createElement(react_router_dom_1.BrowserRouter, null,
+        React.createElement("div", null,
+            React.createElement(NavBar_1["default"], { loggedInUser: loggedInUser, onSignUpClicked: function () { return setshowSignUpModal(true); }, onLoginClicked: function () { return setshowLogInModal(true); }, onLogoutSuccessful: function () { return setloggedInUser(null); } }),
+            React.createElement(react_bootstrap_1.Container, { className: App_module_css_1["default"].pageContainer },
+                React.createElement(react_router_dom_1.Routes, null,
+                    React.createElement(react_router_dom_1.Route, { path: '/', element: React.createElement(NotesPages_1["default"], { loggedInUser: loggedInUser }) }),
+                    React.createElement(react_router_dom_1.Route, { path: '/privacy', element: React.createElement(PrivacyPage_1["default"], null) }),
+                    React.createElement(react_router_dom_1.Route, { path: '/*', element: React.createElement(NotFoundPage_1["default"], null) }))),
+            showSignUpModal &&
+                React.createElement(SignUpModal_1["default"], { onDismiss: function () { return setshowSignUpModal(false); }, onSignUpSuccessfull: function (user) {
+                        setloggedInUser(user);
+                        setshowSignUpModal(false);
+                    } }),
+            showLogInModal &&
+                React.createElement(LoginModal_1["default"], { onDismiss: function () { return setshowLogInModal(false); }, onLoginSuccessful: function (user) {
+                        setloggedInUser(user);
+                        setshowLogInModal(false);
+                    } }))));
 }
 exports["default"] = App;

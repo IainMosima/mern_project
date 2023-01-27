@@ -1,15 +1,4 @@
 "use strict";
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -50,45 +39,53 @@ exports.__esModule = true;
 var react_bootstrap_1 = require("react-bootstrap");
 var react_hook_form_1 = require("react-hook-form");
 var NoteApi = require("../network/note_api");
-var AddNoteDialog = function (_a) {
-    var _b;
-    var onDismiss = _a.onDismiss, onNoteSaved = _a.onNoteSaved;
-    var _c = react_hook_form_1.useForm(), register = _c.register, handleSubmit = _c.handleSubmit, _d = _c.formState, errors = _d.errors, isSubmitting = _d.isSubmitting;
+var TextInputField_1 = require("./form/TextInputField");
+var AddEditNoteDialog = function (_a) {
+    var noteToEdit = _a.noteToEdit, onDismiss = _a.onDismiss, onNoteSaved = _a.onNoteSaved;
+    var _b = react_hook_form_1.useForm({
+        defaultValues: {
+            title: (noteToEdit === null || noteToEdit === void 0 ? void 0 : noteToEdit.title) || "",
+            text: (noteToEdit === null || noteToEdit === void 0 ? void 0 : noteToEdit.text) || ""
+        }
+    }), register = _b.register, handleSubmit = _b.handleSubmit, _c = _b.formState, errors = _c.errors, isSubmitting = _c.isSubmitting;
     function onSubmit(input) {
         return __awaiter(this, void 0, void 0, function () {
             var noteResponse, error_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, NoteApi.createNote(input)];
+                        _a.trys.push([0, 5, , 6]);
+                        noteResponse = void 0;
+                        if (!noteToEdit) return [3 /*break*/, 2];
+                        return [4 /*yield*/, NoteApi.updateNote(noteToEdit._id, input)];
                     case 1:
                         noteResponse = _a.sent();
+                        return [3 /*break*/, 4];
+                    case 2: return [4 /*yield*/, NoteApi.createNote(input)];
+                    case 3:
+                        noteResponse = _a.sent();
+                        _a.label = 4;
+                    case 4:
                         onNoteSaved(noteResponse);
-                        return [3 /*break*/, 3];
-                    case 2:
+                        return [3 /*break*/, 6];
+                    case 5:
                         error_1 = _a.sent();
                         console.error(error_1);
                         alert(error_1);
-                        return [3 /*break*/, 3];
-                    case 3: return [2 /*return*/];
+                        return [3 /*break*/, 6];
+                    case 6: return [2 /*return*/];
                 }
             });
         });
     }
-    return (React.createElement(react_bootstrap_1.Modal, { show: true, onHide: function () { return onDismiss; } },
+    return (React.createElement(react_bootstrap_1.Modal, { show: true, onHide: onDismiss },
         React.createElement(react_bootstrap_1.Modal.Header, { closeButton: true },
-            React.createElement(react_bootstrap_1.Modal.Title, null, "Add Note Note")),
+            React.createElement(react_bootstrap_1.Modal.Title, null, noteToEdit ? "Edit note" : "Add note")),
         React.createElement(react_bootstrap_1.Modal.Body, null,
-            React.createElement(react_bootstrap_1.Form, { id: "addNoteForm", onSubmit: handleSubmit(onSubmit) },
-                React.createElement(react_bootstrap_1.Form.Group, { className: "mb-3" },
-                    React.createElement(react_bootstrap_1.Form.Label, null, "Title"),
-                    React.createElement(react_bootstrap_1.Form.Control, __assign({ type: "text", placeholder: "Title", isInvalid: !!errors.title }, register("title", { required: "Required" }))),
-                    React.createElement(react_bootstrap_1.Form.Control.Feedback, { type: "invalid" }, (_b = errors.title) === null || _b === void 0 ? void 0 : _b.message)),
-                React.createElement(react_bootstrap_1.Form.Group, { className: "mb-3" },
-                    React.createElement(react_bootstrap_1.Form.Label, null, "Text"),
-                    React.createElement(react_bootstrap_1.Form.Control, __assign({ as: "textarea", placeholder: "Title" }, register("text")))))),
+            React.createElement(react_bootstrap_1.Form, { id: "addEditNoteForm", onSubmit: handleSubmit(onSubmit) },
+                React.createElement(TextInputField_1["default"], { name: "title", label: "Title", type: "text", placeholder: "Title", register: register, registerOptions: { required: true }, error: errors.title }),
+                React.createElement(TextInputField_1["default"], { name: "text", label: "text", as: "textarea", rows: 5, placeholder: "Title", register: register }))),
         React.createElement(react_bootstrap_1.Modal.Footer, null,
-            React.createElement(react_bootstrap_1.Button, { type: "submit", form: "addNoteForm", disabled: isSubmitting }, "Save"))));
+            React.createElement(react_bootstrap_1.Button, { type: "submit", form: "addEditNoteForm", disabled: isSubmitting }, "Save"))));
 };
-exports["default"] = AddNoteDialog;
+exports["default"] = AddEditNoteDialog;
